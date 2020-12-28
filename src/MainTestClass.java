@@ -13,4 +13,12 @@ public class MainTestClass {
         int number = obj.getClassNumber();
         assert number > 45 : "Номер класса " + number + " не больше 45";
     }
+
+    @Test
+    public void testGetClassString(){
+        MainClass obj = new MainClass();
+        String str = obj.getClassString();
+        assert str.contains("Hello") | str.contains("hello"): "Не найдено hello/Hello";
+    }
+
 }
