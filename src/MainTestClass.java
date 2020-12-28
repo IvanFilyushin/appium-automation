@@ -6,4 +6,11 @@ public class MainTestClass {
         MainClass obj = new MainClass();
         assert obj.getLocalNumber() == 14 : "Ожидалось число 14";
     }
+
+    @Test
+    public void testGetClassNumber(){
+        MainClass obj = new MainClass();
+        int number = obj.getClassNumber();
+        assert number > 45 : "Номер класса " + number + " не больше 45";
+    }
 }
