@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 public class FirstTest {
 
@@ -62,10 +63,9 @@ public class FirstTest {
         element.sendKeys(value);
         return element;
     }
-    private boolean waitForElementNotPresent(String xpath, String error_message, long timeoutInSeconds){
+    private boolean waitForElementNotPresent(By by, String error_message, long timeoutInSeconds){
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(error_message + "\n");
-        By by = By.xpath(xpath);
         return wait.until(
                 ExpectedConditions.invisibilityOfElementLocated(by)
         );
@@ -100,5 +100,33 @@ public class FirstTest {
                 text,
                 "Input field doesn't contain text '" + text + "'\n"
         );
+    }
+
+    @Test
+    public void searchOneWordTest() {
+        String word = "Appium";
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Can't find Search Wikipedia by Xpath",
+                5);
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                word,
+                "Can't find Search field",
+                5);
+        WebElement element=waitForElementPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_results_list']"),
+                "Results list doesn't found");
+        Assert.assertTrue(
+                "Word '" + word + "' doesn't found",
+                element.findElements(By.xpath("//*[@class='android.widget.TextView']")).size()>1);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_close_btn']"),
+                "Can't find Close Button",
+                5);
+        waitForElementNotPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_results_list']"),
+                "Search result didn't disappear",
+                1);
     }
 }
