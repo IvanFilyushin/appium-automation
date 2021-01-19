@@ -1,10 +1,12 @@
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -85,6 +87,30 @@ public class FirstTest {
         );
     }
 
+    protected void swipeUp(int timeOfSwipe){
+        TouchAction action = new TouchAction(driver);
+        Dimension size = driver.manage().window().getSize();
+        int x = size.width/2;
+        int start_y = (int) (size.height * 0.8);
+        int end_y = (int) (size.height * 0.2);
+        action.press(x, start_y).waitAction(timeOfSwipe).moveTo(x,end_y).release().perform();
+    }
+
+    protected void swipeUpQuik(){
+        swipeUp(200);
+    }
+
+    protected void swipeUpToFindElement(By by, String error_message, int maxSwipes){
+        int already_swiped = 0;
+        while (driver.findElements(by).size()==0){
+            if (already_swiped>maxSwipes){
+                waitForElementPresent(by, "Can't find element by swiping up \n" + error_message, 0);
+                return;
+            }
+            swipeUpQuik();
+            ++ already_swiped;
+        };
+    }
     @Test
     public void inputHasTextTest(){
         String locator = "//*[@resource-id='org.wikipedia:id/search_container']//*[@class='android.widget.TextView']";
@@ -128,5 +154,144 @@ public class FirstTest {
                 By.xpath("//*[@resource-id='org.wikipedia:id/search_results_list']"),
                 "Search result didn't disappear",
                 1);
+    }
+    @Test
+    public void testSwipeArticle() {
+        String word = "Appium";
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Can't find Search Wikipedia",
+                5);
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                word,
+                "Can't find Search field",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][@text='Appium']"),
+                "Can't find text: " + word,
+                5);
+
+        swipeUpToFindElement(By.xpath("//*[@resource-id='pcs-footer-container-legal']"),
+                "Can't find the end of the article",
+                20);
+    }
+    @Test
+    public void testSaveFirstArticleToMyList() {
+        String word = "Java";
+        String article_title_one = "'Object-oriented programming language'";
+        String article_title_two = "'Indonesian island'";
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Can't find Search Wikipedia",
+                5);
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                word,
+                "Can't find Search field",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_results_list']//*[contains(@text," + article_title_one +")]"),
+                "Can't find " + article_title_one,
+                5);
+        waitForElementPresent(
+                By.xpath("//*[@text="+article_title_one+"]"),
+                "Can't pass to page with " + article_title_one,
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/article_menu_bookmark']"),
+                "Can't find button to open article_menu_bookmark",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@text='ADD TO LIST']"),
+                "Can't find button option Add to another reading list",
+                10);
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Create new')]"),
+                "Can't find Create new field",
+                5);
+        waitForElementAndSendKeys(
+                By.xpath("//*[@resource-id='org.wikipedia:id/text_input'][@text='Name of this list']"),
+                "Java list",
+                "Can't find name input field",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@class='android.widget.Button'][@text='OK']"),
+                "Can't find OK button",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@content-desc='Navigate up']"),
+                "Can't find Back button",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_results_list']//*[contains(@text," + article_title_two +")]"),
+                "Can't find " + article_title_two,
+                5);
+        waitForElementPresent(
+                By.xpath("//*[@text="+article_title_two+"]"),
+                "Can't pass to page with " + article_title_two,
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/article_menu_bookmark']"),
+                "Can't find button to open article_menu_bookmark",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@text='ADD TO LIST']"),
+                "Can't find button option Add to another reading list",
+                10);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/item_title'][@text='Java list']"),
+                "Can't find Java list",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_toolbar_button_show_overflow_menu']"),
+                "Can't find toolbar button",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/overflow_feed'][@text='Home' or @text='Explore']"),
+                "Can't find Explore button",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@content-desc='My lists']"),
+                "Can't find My lists",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@text='Java list']"),
+                "Can't find Java list in My lists",
+                5);
+        waitForElementPresent(
+                By.xpath(("//*[contains(@text,'2 of 2 articles available offline')]")),
+                "List does not contain 2 articles");
+        waitForElementAndClick(
+                By.xpath("//*[@text='Java list']"),
+                "Can't find Java list in My lists",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@text=" + article_title_one + "]"),
+                "Can't select " + article_title_one,
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/article_menu_bookmark']"),
+                "Can't find button to open article_menu_bookmark",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/title'][@text='Remove from Java list']"),
+                "Can't find button option Remove from reading list",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@content-desc='Navigate up']"),
+                "Can't find Back button",
+                5);
+        waitForElementPresent(
+                By.xpath("//*[contains(@text,'1 of 1 article available offline')]"),
+                "List does not contain 1 article");
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text," + article_title_two +")]"),
+                "Can't find " + article_title_two,
+                5);
+        waitForElementPresent(
+                By.xpath("//*[@text="+article_title_two+"]"),
+                "Can't pass to page with " + article_title_two,
+                5);
     }
 }
