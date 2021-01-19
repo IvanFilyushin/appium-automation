@@ -111,6 +111,17 @@ public class FirstTest {
             ++ already_swiped;
         };
     }
+
+    private int getAmountOfElements(By by){
+        List elements = driver.findElements(by);
+        return elements.size();
+    }
+
+    private void assertElementPresent(By by, String error_messages){
+        int count = getAmountOfElements(by);
+        Assert.assertEquals(error_messages + "Elements locator:" + by.toString(), count, 1);
+    }
+
     @Test
     public void inputHasTextTest(){
         String locator = "//*[@resource-id='org.wikipedia:id/search_container']//*[@class='android.widget.TextView']";
@@ -175,6 +186,7 @@ public class FirstTest {
         swipeUpToFindElement(By.xpath("//*[@resource-id='pcs-footer-container-legal']"),
                 "Can't find the end of the article",
                 20);
+
     }
     @Test
     public void testSaveFirstArticleToMyList() {
@@ -293,5 +305,28 @@ public class FirstTest {
                 By.xpath("//*[@text="+article_title_two+"]"),
                 "Can't pass to page with " + article_title_two,
                 5);
+    }
+
+    @Test
+    public void assertTitleTest(){
+        String word = "Java";
+        String title = "'Indonesian island'";
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Can't find Search Wikipedia",
+                5);
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                word,
+                "Can't find Search field",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_results_list']//*[contains(@text," + title +")]"),
+                "Can't find " + title,
+                5);
+        assertElementPresent(
+                By.xpath("//*[@resource-id='pcs-edit-section-title-description'][@text=" + title + "]"),
+                "Title " + title + " is absent on the page. "
+        );
     }
 }
