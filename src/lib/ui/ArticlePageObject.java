@@ -47,7 +47,7 @@ public class ArticlePageObject extends MainPageObject{
 
     public void articleHasTitleDescry(String title){
         String title_xpath = getTitleDescryXpath(title);
-        this.waitForElementPresent(By.xpath(title_xpath), "Title " + title + " is absent on the page." , 5);
+        this.waitForElementPresent(By.xpath(title_xpath), "Title " + title + " is absent on the page." , 15);
     }
 
 
