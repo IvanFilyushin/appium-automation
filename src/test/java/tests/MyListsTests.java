@@ -1,5 +1,8 @@
 package tests;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import lib.CoreTestCase;
 import lib.ui.ArticlePageObject;
 import lib.ui.SearchPageObject;
@@ -10,6 +13,8 @@ import org.junit.Test;
 public class MyListsTests extends CoreTestCase {
 
     @Test
+    @Description("Save two articles to list and then delete one from there")
+    @Severity(value = SeverityLevel.BLOCKER)
     public void testSaveArticlesToMyList() {
         String word = "Java";
         String title = "Java (programming language)";

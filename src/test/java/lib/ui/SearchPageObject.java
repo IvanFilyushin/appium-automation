@@ -1,6 +1,7 @@
 package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -22,25 +23,30 @@ abstract public class SearchPageObject extends MainPageObject{
         super(driver);
     }
 
+    @Step("Initialization search field")
     public void initSearchInput(){
         this.waitForElementAndClick(SEARCH_INIT_ELEMENT, "Can't find and click init Search element", 5);
         this.waitForElementPresent(SEARCH_INPUT, "Can't find input search element after clicking init Search element", 5);
     }
 
+    @Step("Type search line '{search_line}'")
     public void typeSearchLine(String search_line){
         this.waitForElementAndSendKeys(SEARCH_INPUT, search_line, "Can't input search line", 5);
     }
 
+    @Step("Search result is not empty")
     public boolean searchHasResult(){
         WebElement search_result = this.waitForElementPresent(SEARCH_RESULT, "Search Results list doesn't found");
         List <WebElement> elements = search_result.findElements((By.xpath(SEARCH_RESULT_ELEMENTS)));
         return elements.size()>1;
     }
 
+    @Step("Search result is empty")
     public void searchHasNoResult(){
         waitForElementNotPresent(SEARCH_RESULT, "Search Results has elements",1);
     }
 
+    @Step("Click close search button")
     public void closeSearch(){
         this.waitForElementAndClick(CLOSE_BUTTON, "Can't find Close Search Button", 5);
     }
@@ -53,10 +59,13 @@ abstract public class SearchPageObject extends MainPageObject{
     }
     /* TEMPLATES METHODS */
 
+    @Step("Waiting search result and click")
     public void waitForTextInSearchResultAndClick(String text){
         String search_result_title_xpath = getResultSearchListTitle(text);
         this.waitForElementAndClick(search_result_title_xpath, "Can't find search result " + text,5);
     }
+
+    @Step("Waiting description '{text}' in search result and click")
     public void waitForTextInSearchResultDescriptionAndClick(String text){
         String search_result_title_xpath = getResultSearchListTitleDescription(text);
         this.waitForElementAndClick(search_result_title_xpath, "Can't find search result description" + text,5);

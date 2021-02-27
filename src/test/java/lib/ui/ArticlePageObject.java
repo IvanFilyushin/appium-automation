@@ -77,6 +77,7 @@ abstract public class ArticlePageObject extends MainPageObject{
 
 
     public String getArticleTitle(){
+        screenshot(this.takeStringShot("article_title"));
         WebElement element = this.waitForElementPresent(TITLE,"Can't find title", 5);
         return element.getText();
     }
